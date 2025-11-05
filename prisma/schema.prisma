@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ClientSubmission {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  
+  // Personal Details (encrypted where needed)
+  fullName        String
+  dateOfBirth     DateTime
+  panNumber       String   // encrypted
+  panNumberIv     String
+  panNumberAuthTag String
+  nameAsPerPan    String
+  mobile          String   // encrypted
+  mobileIv        String
+  mobileAuthTag   String
+  email           String   // encrypted
+  emailIv         String
+  emailAuthTag    String
+  address1        String
+  address2        String?
+  address3        String?
+  city            String
+  country         String
+  pinCode         String
+  aadharNumber    String   // encrypted
+  aadharNumberIv  String
+  aadharNumberAuthTag String
+  
+  // Financial Details
+  annualIncome          String   // encrypted
+  annualIncomeIv        String
+  annualIncomeAuthTag   String
+  isPoliticallyExposed  Boolean
+  
+  // Marital Status
+  maritalStatus    String
+  spouseName       String?
+  spouseDob        DateTime?
+  spousePan        String?
+  spouseMobile     String?
+  spouseEmail      String?
+  spouseAddressSame String?
+  spouseAddress1   String?
+  spouseAddress2   String?
+  spouseAddress3   String?
+  spouseCity       String?
+  spouseCountry    String?
+  spousePinCode    String?
+  placeOfBirth     String?
+  
+  // Children
+  hasChildren      Boolean
+  numberOfChildren Int?
+  childrenData     Json?    // Store array of {name, dob}
+  
+  // Investment Info
+  employmentStatus  String
+  monthlyExpenses   String
+  currentSavings    String?
+  hasInvestments    Boolean
+  investmentTypes   String[]
+  financialGoals    String[]
+  riskTolerance     String
+  timeHorizon       String
+  additionalNotes   String?
+  
+  // Metadata
+  submittedAt DateTime @default(now())
+  ipAddress   String
+  userAgent   String
+  
+  @@index([createdAt])
+  @@index([email])
+}
