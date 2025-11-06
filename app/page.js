@@ -214,29 +214,6 @@ export default function ClientQuestionnaire() {
     }
   };
 
-  if (submitted) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
-          <div className="mb-6">
-            <CheckCircle className="w-20 h-20 text-green-500 mx-auto" />
-          </div>
-          <h2 className="text-3xl font-bold text-black mb-4">Thank You!</h2>
-          <p className="text-black mb-6">
-            Your financial questionnaire has been submitted successfully.
-            Our team will review your information and contact you within 2-3 business days.
-          </p>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <Lock className="w-5 h-5 text-blue-600 mx-auto mb-2" />
-            <p className="text-sm text-blue-800">
-              Your data is encrypted and securely stored
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const [indiaStates, setIndiaStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [selectedState, setSelectedState] = useState(formData.state || '');
@@ -266,6 +243,29 @@ export default function ClientQuestionnaire() {
       updateField("city", selectedCity);
     }
   }, [selectedCity]);
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+          <div className="mb-6">
+            <CheckCircle className="w-20 h-20 text-green-500 mx-auto" />
+          </div>
+          <h2 className="text-3xl font-bold text-black mb-4">Thank You!</h2>
+          <p className="text-black mb-6">
+            Your financial questionnaire has been submitted successfully.
+            Our team will review your information and contact you within 2-3 business days.
+          </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <Lock className="w-5 h-5 text-blue-600 mx-auto mb-2" />
+            <p className="text-sm text-blue-800">
+              Your data is encrypted and securely stored
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
@@ -461,7 +461,7 @@ export default function ClientQuestionnaire() {
                     </select>
                     {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
                   </div>
-                  
+
                   {/* <div>
                     <label className="block text-sm font-medium text-black mb-1">City / Town *</label>
                     <input
