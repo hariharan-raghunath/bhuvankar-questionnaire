@@ -1,5 +1,4 @@
-'use client';
-
+"use client"
 import { useState } from 'react';
 import { CheckCircle, ArrowRight, ArrowLeft, Lock } from 'lucide-react';
 
@@ -65,7 +64,6 @@ export default function ClientQuestionnaire() {
     setFormData(prev => {
       const updated = { ...prev, [field]: value };
       
-      // Reset children array if number changes
       if (field === 'numberOfChildren') {
         const num = parseInt(value) || 0;
         updated.children = Array(num).fill(null).map((_, i) => 
@@ -73,7 +71,6 @@ export default function ClientQuestionnaire() {
         );
       }
       
-      // Reset spouse address fields if "Same as Mine" is selected
       if (field === 'spouseAddressSame' && value === 'same') {
         updated.spouseAddress1 = '';
         updated.spouseAddress2 = '';
@@ -184,6 +181,10 @@ export default function ClientQuestionnaire() {
   const handleSubmit = async () => {
     if (!validateStep(step)) return;
     
+    if (loading) return;
+    
+    setLoading(true);
+    
     try {
       const response = await fetch('/api/submit', {
         method: 'POST',
@@ -201,6 +202,8 @@ export default function ClientQuestionnaire() {
     } catch (error) {
       console.error('Error:', error);
       alert('Network error. Please check your connection and try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -211,8 +214,8 @@ export default function ClientQuestionnaire() {
           <div className="mb-6">
             <CheckCircle className="w-20 h-20 text-green-500 mx-auto" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">Thank You!</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="text-3xl font-bold text-black mb-4">Thank You!</h2>
+          <p className="text-black mb-6">
             Your financial questionnaire has been submitted successfully. 
             Our team will review your information and contact you within 2-3 business days.
           </p>
@@ -241,7 +244,7 @@ export default function ClientQuestionnaire() {
               {[1, 2, 3].map(num => (
                 <div key={num} className="flex items-center flex-1">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                    step >= num ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'
+                    step >= num ? 'bg-blue-600 text-white' : 'bg-gray-200 text-black'
                   }`}>
                     {num}
                   </div>
@@ -258,16 +261,16 @@ export default function ClientQuestionnaire() {
           <div className="px-6 pb-6">
             {step === 1 && (
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Personal Information</h2>
+                <h2 className="text-2xl font-bold text-black mb-4">Personal Information</h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                    <label className="block text-sm font-medium text-black mb-1">Full Name *</label>
                     <input
                       type="text"
                       value={formData.fullName}
                       onChange={(e) => updateField('fullName', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                         errors.fullName ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="John Doe"
@@ -276,12 +279,12 @@ export default function ClientQuestionnaire() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth (DD/MM/YYYY) *</label>
+                    <label className="block text-sm font-medium text-black mb-1">Date of Birth (DD/MM/YYYY) *</label>
                     <input
                       type="date"
                       value={formData.dateOfBirth}
                       onChange={(e) => updateField('dateOfBirth', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                         errors.dateOfBirth ? 'border-red-500' : 'border-gray-300'
                       }`}
                     />
@@ -291,12 +294,12 @@ export default function ClientQuestionnaire() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">PAN No. *</label>
+                    <label className="block text-sm font-medium text-black mb-1">PAN No. *</label>
                     <input
                       type="text"
                       value={formData.panNumber}
                       onChange={(e) => updateField('panNumber', e.target.value.toUpperCase())}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                         errors.panNumber ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="ABCDE1234F"
@@ -306,12 +309,12 @@ export default function ClientQuestionnaire() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Name as per PAN *</label>
+                    <label className="block text-sm font-medium text-black mb-1">Name as per PAN *</label>
                     <input
                       type="text"
                       value={formData.nameAsPerPan}
                       onChange={(e) => updateField('nameAsPerPan', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                         errors.nameAsPerPan ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="As per PAN card"
@@ -322,43 +325,43 @@ export default function ClientQuestionnaire() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number *</label>
+                    <label className="block text-sm font-medium text-black mb-1">Mobile Number *</label>
                     <input
                       type="tel"
                       value={formData.mobile}
                       onChange={(e) => updateField('mobile', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black  ${
                         errors.mobile ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="+91 98765 43210"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Number mapped with bank account & existing investments</p>
+                    <p className="text-xs text-black mt-1">Number mapped with bank account & existing investments</p>
                     {errors.mobile && <p className="text-red-500 text-sm mt-1">{errors.mobile}</p>}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Personal Email ID *</label>
+                    <label className="block text-sm font-medium text-black mb-1">Personal Email ID *</label>
                     <input
                       type="email"
                       value={formData.email}
                       onChange={(e) => updateField('email', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                         errors.email ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="john@example.com"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Email mapped with bank account & existing investments</p>
+                    <p className="text-xs text-black mt-1">Email mapped with bank account & existing investments</p>
                     {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Address 1 *</label>
+                  <label className="block text-sm font-medium text-black mb-1">Address 1 *</label>
                   <input
                     type="text"
                     value={formData.address1}
                     onChange={(e) => updateField('address1', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                       errors.address1 ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="House/Flat No., Building Name"
@@ -367,35 +370,35 @@ export default function ClientQuestionnaire() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Address 2</label>
+                  <label className="block text-sm font-medium text-black mb-1">Address 2</label>
                   <input
                     type="text"
                     value={formData.address2}
                     onChange={(e) => updateField('address2', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                     placeholder="Street, Area, Locality"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Address 3</label>
+                  <label className="block text-sm font-medium text-black mb-1">Address 3</label>
                   <input
                     type="text"
                     value={formData.address3}
                     onChange={(e) => updateField('address3', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                     placeholder="Landmark"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">City / Town *</label>
+                    <label className="block text-sm font-medium text-black mb-1">City / Town *</label>
                     <input
                       type="text"
                       value={formData.city}
                       onChange={(e) => updateField('city', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                         errors.city ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="Mumbai"
@@ -404,12 +407,12 @@ export default function ClientQuestionnaire() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Country *</label>
+                    <label className="block text-sm font-medium text-black mb-1">Country *</label>
                     <input
                       type="text"
                       value={formData.country}
                       onChange={(e) => updateField('country', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                         errors.country ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="India"
@@ -418,12 +421,12 @@ export default function ClientQuestionnaire() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">PIN / ZIP Code *</label>
+                    <label className="block text-sm font-medium text-black mb-1">PIN / ZIP Code *</label>
                     <input
                       type="text"
                       value={formData.pinCode}
                       onChange={(e) => updateField('pinCode', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                         errors.pinCode ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="400001"
@@ -434,12 +437,12 @@ export default function ClientQuestionnaire() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Aadhar / Identity No. *</label>
+                  <label className="block text-sm font-medium text-black mb-1">Aadhar / Identity No. *</label>
                   <input
                     type="text"
                     value={formData.aadharNumber}
                     onChange={(e) => updateField('aadharNumber', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                       errors.aadharNumber ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="1234 5678 9012"
@@ -452,14 +455,14 @@ export default function ClientQuestionnaire() {
 
             {step === 2 && (
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Financial & Family Information</h2>
+                <h2 className="text-2xl font-bold text-black mb-4">Financial & Family Information</h2>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Annual Income (in lakhs) *</label>
+                  <label className="block text-sm font-medium text-black mb-1">Annual Income (in lakhs) *</label>
                   <select
                     value={formData.annualIncome}
                     onChange={(e) => updateField('annualIncome', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                       errors.annualIncome ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
@@ -474,10 +477,10 @@ export default function ClientQuestionnaire() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Are you a politically exposed person? *</label>
-                  <p className="text-xs text-gray-500 mb-2">PEP is an individual who has held or currently holds a prominent public function, either in India or a foreign country</p>
+                  <label className="block text-sm font-medium text-black mb-1">Are you a politically exposed person? *</label>
+                  <p className="text-xs text-black mb-2">PEP is an individual who has held or currently holds a prominent public function, either in India or a foreign country</p>
                   <div className="space-y-2">
-                    <label className="flex items-center">
+                    <label className="flex items-center text-black">
                       <input
                         type="radio"
                         value="yes"
@@ -487,7 +490,7 @@ export default function ClientQuestionnaire() {
                       />
                       Yes
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center text-black">
                       <input
                         type="radio"
                         value="no"
@@ -502,9 +505,9 @@ export default function ClientQuestionnaire() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status *</label>
+                  <label className="block text-sm font-medium text-black mb-1">Marital Status *</label>
                   <div className="space-y-2">
-                    <label className="flex items-center">
+                    <label className="flex items-center text-black">
                       <input
                         type="radio"
                         value="married"
@@ -514,7 +517,7 @@ export default function ClientQuestionnaire() {
                       />
                       Married
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center text-black">
                       <input
                         type="radio"
                         value="unmarried"
@@ -524,7 +527,7 @@ export default function ClientQuestionnaire() {
                       />
                       Unmarried
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center text-black">
                       <input
                         type="radio"
                         value="others"
@@ -540,16 +543,16 @@ export default function ClientQuestionnaire() {
 
                 {formData.maritalStatus === 'married' && (
                   <div className="bg-gray-50 p-4 rounded-lg space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-800">Spouse Details</h3>
+                    <h3 className="text-lg font-semibold text-black">Spouse Details</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Name of the Spouse *</label>
+                        <label className="block text-sm font-medium text-black mb-1">Name of the Spouse *</label>
                         <input
                           type="text"
                           value={formData.spouseName}
                           onChange={(e) => updateField('spouseName', e.target.value)}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                             errors.spouseName ? 'border-red-500' : 'border-gray-300'
                           }`}
                           placeholder="Spouse name"
@@ -558,12 +561,12 @@ export default function ClientQuestionnaire() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">DoB of Spouse *</label>
+                        <label className="block text-sm font-medium text-black mb-1">DoB of Spouse *</label>
                         <input
                           type="date"
                           value={formData.spouseDob}
                           onChange={(e) => updateField('spouseDob', e.target.value)}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                             errors.spouseDob ? 'border-red-500' : 'border-gray-300'
                           }`}
                         />
@@ -573,47 +576,47 @@ export default function ClientQuestionnaire() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">PAN</label>
+                        <label className="block text-sm font-medium text-black mb-1">PAN</label>
                         <input
                           type="text"
                           value={formData.spousePan}
                           onChange={(e) => updateField('spousePan', e.target.value.toUpperCase())}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                           placeholder="ABCDE1234F"
                           maxLength="10"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Mandatory if spouse is nominee</p>
+                        <p className="text-xs text-black mt-1">Mandatory if spouse is nominee</p>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+                        <label className="block text-sm font-medium text-black mb-1">Mobile Number</label>
                         <input
                           type="tel"
                           value={formData.spouseMobile}
                           onChange={(e) => updateField('spouseMobile', e.target.value)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                           placeholder="+91 98765 43210"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Mandatory if spouse is nominee</p>
+                        <p className="text-xs text-black mt-1">Mandatory if spouse is nominee</p>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email ID</label>
+                      <label className="block text-sm font-medium text-black mb-1">Email ID</label>
                       <input
                         type="email"
                         value={formData.spouseEmail}
                         onChange={(e) => updateField('spouseEmail', e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                         placeholder="spouse@example.com"
                       />
-                      <p className="text-xs text-gray-500 mt-1">Mandatory if spouse is nominee</p>
+                      <p className="text-xs text-black mt-1">Mandatory if spouse is nominee</p>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+                      <label className="block text-sm font-medium text-black mb-1">Address *</label>
                       <div className="space-y-2">
-                        <label className="flex items-center">
+                        <label className="flex items-center text-black">
                           <input
                             type="radio"
                             value="same"
@@ -623,7 +626,7 @@ export default function ClientQuestionnaire() {
                           />
                           Same as Mine
                         </label>
-                        <label className="flex items-center">
+                        <label className="flex items-center text-black">
                           <input
                             type="radio"
                             value="different"
@@ -640,12 +643,12 @@ export default function ClientQuestionnaire() {
                     {formData.spouseAddressSame === 'different' && (
                       <div className="space-y-4 pl-4 border-l-2 border-blue-200">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Address 1 *</label>
+                          <label className="block text-sm font-medium text-black mb-1">Address 1 *</label>
                           <input
                             type="text"
                             value={formData.spouseAddress1}
                             onChange={(e) => updateField('spouseAddress1', e.target.value)}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                               errors.spouseAddress1 ? 'border-red-500' : 'border-gray-300'
                             }`}
                             placeholder="House/Flat No., Building Name"
@@ -654,35 +657,35 @@ export default function ClientQuestionnaire() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Address 2</label>
+                          <label className="block text-sm font-medium text-black mb-1">Address 2</label>
                           <input
                             type="text"
                             value={formData.spouseAddress2}
                             onChange={(e) => updateField('spouseAddress2', e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                             placeholder="Street, Area, Locality"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Address 3</label>
+                          <label className="block text-sm font-medium text-black mb-1">Address 3</label>
                           <input
                             type="text"
                             value={formData.spouseAddress3}
                             onChange={(e) => updateField('spouseAddress3', e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                             placeholder="Landmark"
                           />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">City / Town *</label>
+                            <label className="block text-sm font-medium text-black mb-1">City / Town *</label>
                             <input
                               type="text"
                               value={formData.spouseCity}
                               onChange={(e) => updateField('spouseCity', e.target.value)}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                                 errors.spouseCity ? 'border-red-500' : 'border-gray-300'
                               }`}
                               placeholder="Mumbai"
@@ -691,23 +694,23 @@ export default function ClientQuestionnaire() {
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                            <label className="block text-sm font-medium text-black mb-1">Country</label>
                             <input
                               type="text"
                               value={formData.spouseCountry}
                               onChange={(e) => updateField('spouseCountry', e.target.value)}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                               placeholder="India"
                             />
                           </div>
 
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">PIN / ZIP Code *</label>
+                            <label className="block text-sm font-medium text-black mb-1">PIN / ZIP Code *</label>
                             <input
                               type="text"
                               value={formData.spousePinCode}
                               onChange={(e) => updateField('spousePinCode', e.target.value)}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                                 errors.spousePinCode ? 'border-red-500' : 'border-gray-300'
                               }`}
                               placeholder="400001"
@@ -724,12 +727,12 @@ export default function ClientQuestionnaire() {
                 {(formData.maritalStatus === 'married' || formData.maritalStatus === 'others') && (
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Place of Birth *</label>
+                      <label className="block text-sm font-medium text-black mb-1">Place of Birth *</label>
                       <input
                         type="text"
                         value={formData.placeOfBirth}
                         onChange={(e) => updateField('placeOfBirth', e.target.value)}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                           errors.placeOfBirth ? 'border-red-500' : 'border-gray-300'
                         }`}
                         placeholder="City of birth"
@@ -738,9 +741,9 @@ export default function ClientQuestionnaire() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Do you have children? *</label>
+                      <label className="block text-sm font-medium text-black mb-1">Do you have children? *</label>
                       <div className="space-y-2">
-                        <label className="flex items-center">
+                        <label className="flex items-center text-black">
                           <input
                             type="radio"
                             value="yes"
@@ -750,7 +753,7 @@ export default function ClientQuestionnaire() {
                           />
                           Yes
                         </label>
-                        <label className="flex items-center">
+                        <label className="flex items-center text-black">
                           <input
                             type="radio"
                             value="no"
@@ -767,14 +770,14 @@ export default function ClientQuestionnaire() {
                     {formData.hasChildren === 'yes' && (
                       <div className="bg-blue-50 p-4 rounded-lg space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">How many children? *</label>
+                          <label className="block text-sm font-medium text-black mb-1">How many children? *</label>
                           <input
                             type="number"
                             min="1"
                             max="10"
                             value={formData.numberOfChildren}
                             onChange={(e) => updateField('numberOfChildren', e.target.value)}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                               errors.numberOfChildren ? 'border-red-500' : 'border-gray-300'
                             }`}
                             placeholder="Number of children"
@@ -784,15 +787,15 @@ export default function ClientQuestionnaire() {
 
                         {formData.children.map((child, index) => (
                           <div key={index} className="bg-white p-4 rounded-lg space-y-3">
-                            <h4 className="font-semibold text-gray-800">Child {index + 1}</h4>
+                            <h4 className="font-semibold text-black">Child {index + 1}</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                                <label className="block text-sm font-medium text-black mb-1">Name *</label>
                                 <input
                                   type="text"
                                   value={child.name || ''}
                                   onChange={(e) => updateChildField(index, 'name', e.target.value)}
-                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                                     errors[`child${index}Name`] ? 'border-red-500' : 'border-gray-300'
                                   }`}
                                   placeholder="Child's name"
@@ -801,12 +804,12 @@ export default function ClientQuestionnaire() {
                               </div>
 
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth *</label>
+                                <label className="block text-sm font-medium text-black mb-1">Date of Birth *</label>
                                 <input
                                   type="date"
                                   value={child.dob || ''}
                                   onChange={(e) => updateChildField(index, 'dob', e.target.value)}
-                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                                     errors[`child${index}Dob`] ? 'border-red-500' : 'border-gray-300'
                                   }`}
                                 />
@@ -824,14 +827,14 @@ export default function ClientQuestionnaire() {
 
             {step === 3 && (
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Investment Goals & Preferences</h2>
+                <h2 className="text-2xl font-bold text-black mb-4">Investment Goals & Preferences</h2>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Employment Status *</label>
+                  <label className="block text-sm font-medium text-black mb-1">Employment Status *</label>
                   <select
                     value={formData.employmentStatus}
                     onChange={(e) => updateField('employmentStatus', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                       errors.employmentStatus ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
@@ -846,11 +849,11 @@ export default function ClientQuestionnaire() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Expenses *</label>
+                  <label className="block text-sm font-medium text-black mb-1">Monthly Expenses *</label>
                   <select
                     value={formData.monthlyExpenses}
                     onChange={(e) => updateField('monthlyExpenses', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                       errors.monthlyExpenses ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
@@ -865,11 +868,11 @@ export default function ClientQuestionnaire() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Current Savings</label>
+                  <label className="block text-sm font-medium text-black mb-1">Current Savings</label>
                   <select
                     value={formData.currentSavings}
                     onChange={(e) => updateField('currentSavings', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                   >
                     <option value="">Select range</option>
                     <option value="0-1L">₹0 - ₹1 Lakh</option>
@@ -881,9 +884,9 @@ export default function ClientQuestionnaire() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Do you have existing investments?</label>
+                  <label className="block text-sm font-medium text-black mb-1">Do you have existing investments?</label>
                   <div className="space-y-2">
-                    <label className="flex items-center">
+                    <label className="flex items-center text-black">
                       <input
                         type="radio"
                         value="yes"
@@ -893,7 +896,7 @@ export default function ClientQuestionnaire() {
                       />
                       Yes
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center text-black">
                       <input
                         type="radio"
                         value="no"
@@ -908,7 +911,7 @@ export default function ClientQuestionnaire() {
 
                 {formData.hasInvestments === 'yes' && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Investment Types (select all that apply)</label>
+                    <label className="block text-sm font-medium text-black mb-2">Investment Types (select all that apply)</label>
                     <div className="space-y-2">
                       {['Stocks', 'Mutual Funds', 'Fixed Deposits', 'Real Estate', 'Gold', 'PPF/EPF', 'Cryptocurrency', 'Other'].map(type => (
                         <label key={type} className="flex items-center">
@@ -926,7 +929,7 @@ export default function ClientQuestionnaire() {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Financial Goals * (select all that apply)</label>
+                  <label className="block text-sm font-medium text-black mb-2">Financial Goals * (select all that apply)</label>
                   <div className="space-y-2">
                     {[
                       'Retirement Planning',
@@ -938,7 +941,7 @@ export default function ClientQuestionnaire() {
                       'Estate Planning',
                       'Home Purchase'
                     ].map(goal => (
-                      <label key={goal} className="flex items-center">
+                      <label key={goal} className="flex items-center text-black">
                         <input
                           type="checkbox"
                           checked={formData.financialGoals.includes(goal)}
@@ -953,11 +956,11 @@ export default function ClientQuestionnaire() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Risk Tolerance *</label>
+                  <label className="block text-sm font-medium text-black mb-1">Risk Tolerance *</label>
                   <select
                     value={formData.riskTolerance}
                     onChange={(e) => updateField('riskTolerance', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                       errors.riskTolerance ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
@@ -970,11 +973,11 @@ export default function ClientQuestionnaire() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Investment Time Horizon *</label>
+                  <label className="block text-sm font-medium text-black mb-1">Investment Time Horizon *</label>
                   <select
                     value={formData.timeHorizon}
                     onChange={(e) => updateField('timeHorizon', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                       errors.timeHorizon ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
@@ -987,11 +990,11 @@ export default function ClientQuestionnaire() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Additional Notes or Comments</label>
+                  <label className="block text-sm font-medium text-black mb-1">Additional Notes or Comments</label>
                   <textarea
                     value={formData.additionalNotes}
                     onChange={(e) => updateField('additionalNotes', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                     rows="4"
                     placeholder="Any additional information you'd like to share..."
                   />
@@ -1004,7 +1007,7 @@ export default function ClientQuestionnaire() {
                 <button
                   type="button"
                   onClick={prevStep}
-                  className="flex items-center px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                  className="flex items-center px-6 py-3 bg-gray-200 text-black rounded-lg hover:bg-gray-300 transition-colors font-medium"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Previous
@@ -1036,7 +1039,7 @@ export default function ClientQuestionnaire() {
 
         <div className="mt-6 bg-white rounded-lg shadow p-4 flex items-center">
           <Lock className="w-5 h-5 text-blue-600 mr-3 flex-shrink-0" />
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-black">
             Your information is encrypted and securely transmitted. We use industry-standard security measures to protect your data.
           </p>
         </div>
