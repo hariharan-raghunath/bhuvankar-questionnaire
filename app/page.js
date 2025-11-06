@@ -1,10 +1,15 @@
 "use client"
-import { useState } from 'react';
+import { useState, useEffect } from "react";
 import { CheckCircle, ArrowRight, ArrowLeft, Lock } from 'lucide-react';
+import 'react-phone-number-input/style.css'
+import PhoneInput from 'react-phone-number-input'
+import { State, City } from "country-state-city";
 
 export default function ClientQuestionnaire() {
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     // Personal Details
     fullName: '',
@@ -16,15 +21,16 @@ export default function ClientQuestionnaire() {
     address1: '',
     address2: '',
     address3: '',
+    state: '',
     city: '',
-    country: 'India',
+    country: '',
     pinCode: '',
     aadharNumber: '',
-    
+
     // Financial Details
     annualIncome: '',
     isPoliticallyExposed: '',
-    
+
     // Marital Details
     maritalStatus: '',
     spouseName: '',
@@ -37,15 +43,15 @@ export default function ClientQuestionnaire() {
     spouseAddress2: '',
     spouseAddress3: '',
     spouseCity: '',
-    spouseCountry: 'India',
+    spouseCountry: '',
     spousePinCode: '',
     placeOfBirth: '',
-    
+
     // Children Details
     hasChildren: '',
     numberOfChildren: '',
     children: [],
-    
+
     // Investment Goals
     employmentStatus: '',
     monthlyExpenses: '',
@@ -63,14 +69,14 @@ export default function ClientQuestionnaire() {
   const updateField = (field, value) => {
     setFormData(prev => {
       const updated = { ...prev, [field]: value };
-      
+
       if (field === 'numberOfChildren') {
         const num = parseInt(value) || 0;
-        updated.children = Array(num).fill(null).map((_, i) => 
+        updated.children = Array(num).fill(null).map((_, i) =>
           prev.children[i] || { name: '', dob: '' }
         );
       }
-      
+
       if (field === 'spouseAddressSame' && value === 'same') {
         updated.spouseAddress1 = '';
         updated.spouseAddress2 = '';
@@ -79,10 +85,10 @@ export default function ClientQuestionnaire() {
         updated.spouseCountry = 'India';
         updated.spousePinCode = '';
       }
-      
+
       return updated;
     });
-    
+
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -91,7 +97,7 @@ export default function ClientQuestionnaire() {
   const updateChildField = (index, field, value) => {
     setFormData(prev => ({
       ...prev,
-      children: prev.children.map((child, i) => 
+      children: prev.children.map((child, i) =>
         i === index ? { ...child, [field]: value } : child
       )
     }));
@@ -108,7 +114,7 @@ export default function ClientQuestionnaire() {
 
   const validateStep = (stepNum) => {
     const newErrors = {};
-    
+
     if (stepNum === 1) {
       if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
       if (!formData.dateOfBirth) newErrors.dateOfBirth = 'Date of birth is required';
@@ -118,33 +124,34 @@ export default function ClientQuestionnaire() {
       if (!formData.email.trim()) newErrors.email = 'Email is required';
       else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Invalid email format';
       if (!formData.address1.trim()) newErrors.address1 = 'Address is required';
+      if (!formData.state.trim()) newErrors.state = 'State is required';
       if (!formData.city.trim()) newErrors.city = 'City is required';
       if (!formData.country.trim()) newErrors.country = 'Country is required';
       if (!formData.pinCode.trim()) newErrors.pinCode = 'PIN code is required';
       if (!formData.aadharNumber.trim()) newErrors.aadharNumber = 'Aadhar number is required';
     }
-    
+
     if (stepNum === 2) {
       if (!formData.annualIncome) newErrors.annualIncome = 'Annual income is required';
       if (!formData.isPoliticallyExposed) newErrors.isPoliticallyExposed = 'This field is required';
       if (!formData.maritalStatus) newErrors.maritalStatus = 'Marital status is required';
-      
+
       if (formData.maritalStatus === 'married') {
         if (!formData.spouseName.trim()) newErrors.spouseName = 'Spouse name is required';
         if (!formData.spouseDob) newErrors.spouseDob = 'Spouse date of birth is required';
         if (!formData.spouseAddressSame) newErrors.spouseAddressSame = 'Please select address option';
-        
+
         if (formData.spouseAddressSame === 'different') {
           if (!formData.spouseAddress1.trim()) newErrors.spouseAddress1 = 'Spouse address is required';
           if (!formData.spouseCity.trim()) newErrors.spouseCity = 'Spouse city is required';
           if (!formData.spousePinCode.trim()) newErrors.spousePinCode = 'Spouse PIN code is required';
         }
       }
-      
+
       if (formData.maritalStatus === 'married' || formData.maritalStatus === 'others') {
         if (!formData.placeOfBirth.trim()) newErrors.placeOfBirth = 'Place of birth is required';
         if (!formData.hasChildren) newErrors.hasChildren = 'Please specify if you have children';
-        
+
         if (formData.hasChildren === 'yes') {
           if (!formData.numberOfChildren || formData.numberOfChildren < 1) {
             newErrors.numberOfChildren = 'Number of children is required';
@@ -157,7 +164,7 @@ export default function ClientQuestionnaire() {
         }
       }
     }
-    
+
     if (stepNum === 3) {
       if (!formData.employmentStatus) newErrors.employmentStatus = 'Employment status is required';
       if (!formData.monthlyExpenses) newErrors.monthlyExpenses = 'Monthly expenses are required';
@@ -165,7 +172,7 @@ export default function ClientQuestionnaire() {
       if (!formData.riskTolerance) newErrors.riskTolerance = 'Risk tolerance is required';
       if (!formData.timeHorizon) newErrors.timeHorizon = 'Time horizon is required';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -180,20 +187,20 @@ export default function ClientQuestionnaire() {
 
   const handleSubmit = async () => {
     if (!validateStep(step)) return;
-    
+
     if (loading) return;
-    
+
     setLoading(true);
-    
+
     try {
       const response = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         setSubmitted(true);
       } else {
@@ -216,7 +223,7 @@ export default function ClientQuestionnaire() {
           </div>
           <h2 className="text-3xl font-bold text-black mb-4">Thank You!</h2>
           <p className="text-black mb-6">
-            Your financial questionnaire has been submitted successfully. 
+            Your financial questionnaire has been submitted successfully.
             Our team will review your information and contact you within 2-3 business days.
           </p>
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -229,6 +236,36 @@ export default function ClientQuestionnaire() {
       </div>
     );
   }
+
+  const [indiaStates, setIndiaStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [selectedState, setSelectedState] = useState(formData.state || '');
+  const [selectedCity, setSelectedCity] = useState(formData.city || '');
+
+  useEffect(() => {
+    setIndiaStates(State.getStatesOfCountry("IN"));
+  }, []);
+
+  useEffect(() => {
+    if (selectedState) {
+      setCities(City.getCitiesOfState("IN", selectedState));
+
+      setSelectedCity("");
+
+      updateField("state", selectedState);
+      updateField("city", "");
+    } else {
+      setCities([]);
+      updateField("state", "");
+      updateField("city", "");
+    }
+  }, [selectedState]);
+
+  useEffect(() => {
+    if (selectedCity) {
+      updateField("city", selectedCity);
+    }
+  }, [selectedCity]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
@@ -243,15 +280,13 @@ export default function ClientQuestionnaire() {
             <div className="flex items-center justify-between mb-8">
               {[1, 2, 3].map(num => (
                 <div key={num} className="flex items-center flex-1">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                    step >= num ? 'bg-blue-600 text-white' : 'bg-gray-200 text-black'
-                  }`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${step >= num ? 'bg-blue-600 text-white' : 'bg-gray-200 text-black'
+                    }`}>
                     {num}
                   </div>
                   {num < 3 && (
-                    <div className={`flex-1 h-1 mx-2 ${
-                      step > num ? 'bg-blue-600' : 'bg-gray-200'
-                    }`} />
+                    <div className={`flex-1 h-1 mx-2 ${step > num ? 'bg-blue-600' : 'bg-gray-200'
+                      }`} />
                   )}
                 </div>
               ))}
@@ -262,7 +297,7 @@ export default function ClientQuestionnaire() {
             {step === 1 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold text-black mb-4">Personal Information</h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-black mb-1">Full Name *</label>
@@ -270,9 +305,8 @@ export default function ClientQuestionnaire() {
                       type="text"
                       value={formData.fullName}
                       onChange={(e) => updateField('fullName', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                        errors.fullName ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.fullName ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="John Doe"
                     />
                     {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
@@ -284,9 +318,8 @@ export default function ClientQuestionnaire() {
                       type="date"
                       value={formData.dateOfBirth}
                       onChange={(e) => updateField('dateOfBirth', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                        errors.dateOfBirth ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.dateOfBirth ? 'border-red-500' : 'border-gray-300'
+                        }`}
                     />
                     {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>}
                   </div>
@@ -299,9 +332,8 @@ export default function ClientQuestionnaire() {
                       type="text"
                       value={formData.panNumber}
                       onChange={(e) => updateField('panNumber', e.target.value.toUpperCase())}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                        errors.panNumber ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.panNumber ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="ABCDE1234F"
                       maxLength="10"
                     />
@@ -314,9 +346,8 @@ export default function ClientQuestionnaire() {
                       type="text"
                       value={formData.nameAsPerPan}
                       onChange={(e) => updateField('nameAsPerPan', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                        errors.nameAsPerPan ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.nameAsPerPan ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="As per PAN card"
                     />
                     {errors.nameAsPerPan && <p className="text-red-500 text-sm mt-1">{errors.nameAsPerPan}</p>}
@@ -325,16 +356,22 @@ export default function ClientQuestionnaire() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-black mb-1">Mobile Number *</label>
-                    <input
+                    <label className="block text-sm font-medium text-black mb-3">Mobile Number *</label>
+                    <PhoneInput
+                      defaultCountry="IN"
+                      value={formData.mobile}
+                      onChange={(value) => updateField('mobile', value)}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black  ${errors.mobile ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                    />
+                    {/* <input
                       type="tel"
                       value={formData.mobile}
                       onChange={(e) => updateField('mobile', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black  ${
-                        errors.mobile ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black  ${errors.mobile ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="+91 98765 43210"
-                    />
+                    /> */}
                     <p className="text-xs text-black mt-1">Number mapped with bank account & existing investments</p>
                     {errors.mobile && <p className="text-red-500 text-sm mt-1">{errors.mobile}</p>}
                   </div>
@@ -345,9 +382,8 @@ export default function ClientQuestionnaire() {
                       type="email"
                       value={formData.email}
                       onChange={(e) => updateField('email', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                        errors.email ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.email ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="john@example.com"
                     />
                     <p className="text-xs text-black mt-1">Email mapped with bank account & existing investments</p>
@@ -361,9 +397,8 @@ export default function ClientQuestionnaire() {
                     type="text"
                     value={formData.address1}
                     onChange={(e) => updateField('address1', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                      errors.address1 ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.address1 ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="House/Flat No., Building Name"
                   />
                   {errors.address1 && <p className="text-red-500 text-sm mt-1">{errors.address1}</p>}
@@ -392,19 +427,54 @@ export default function ClientQuestionnaire() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
+                  {/* State Selection Dropdown */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-black mb-1">State *</label>
+                    <select
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black bg-white"
+                      value={selectedState}
+                      onChange={e => setSelectedState(e.target.value)}
+                      required
+                    >
+                      <option value="">Select State</option>
+                      {indiaStates.map(state => (
+                        <option key={state.isoCode} value={state.isoCode}>{state.name}</option>
+                      ))}
+                    </select>
+                    {errors.state && <p className="text-red-500 text-sm mt-1">{errors.state}</p>}
+                  </div>
+
+                  {/* City Selection Dropdown */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-black mb-1">City *</label>
+                    <select
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black bg-white"
+                      value={selectedCity}
+                      onChange={e => setSelectedCity(e.target.value)}
+                      required
+                      disabled={!selectedState || cities.length === 0}
+                    >
+                      <option value="">Select City</option>
+                      {cities.map(city => (
+                        <option key={city.name} value={city.name}>{city.name}</option>
+                      ))}
+                    </select>
+                    {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
+                  </div>
+                  
+                  {/* <div>
                     <label className="block text-sm font-medium text-black mb-1">City / Town *</label>
                     <input
                       type="text"
                       value={formData.city}
                       onChange={(e) => updateField('city', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                        errors.city ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.city ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="Mumbai"
                     />
                     {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
-                  </div>
+                  </div> */}
+
 
                   <div>
                     <label className="block text-sm font-medium text-black mb-1">Country *</label>
@@ -412,9 +482,8 @@ export default function ClientQuestionnaire() {
                       type="text"
                       value={formData.country}
                       onChange={(e) => updateField('country', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                        errors.country ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.country ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="India"
                     />
                     {errors.country && <p className="text-red-500 text-sm mt-1">{errors.country}</p>}
@@ -426,9 +495,8 @@ export default function ClientQuestionnaire() {
                       type="text"
                       value={formData.pinCode}
                       onChange={(e) => updateField('pinCode', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                        errors.pinCode ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.pinCode ? 'border-red-500' : 'border-gray-300'
+                        }`}
                       placeholder="400001"
                       maxLength="6"
                     />
@@ -442,9 +510,8 @@ export default function ClientQuestionnaire() {
                     type="text"
                     value={formData.aadharNumber}
                     onChange={(e) => updateField('aadharNumber', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                      errors.aadharNumber ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.aadharNumber ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="1234 5678 9012"
                     maxLength="12"
                   />
@@ -456,15 +523,14 @@ export default function ClientQuestionnaire() {
             {step === 2 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold text-black mb-4">Financial & Family Information</h2>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-black mb-1">Annual Income (in lakhs) *</label>
                   <select
                     value={formData.annualIncome}
                     onChange={(e) => updateField('annualIncome', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                      errors.annualIncome ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.annualIncome ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   >
                     <option value="">Select range</option>
                     <option value="0-5">₹0 - ₹5 Lakhs</option>
@@ -544,7 +610,7 @@ export default function ClientQuestionnaire() {
                 {formData.maritalStatus === 'married' && (
                   <div className="bg-gray-50 p-4 rounded-lg space-y-4">
                     <h3 className="text-lg font-semibold text-black">Spouse Details</h3>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-black mb-1">Name of the Spouse *</label>
@@ -552,9 +618,8 @@ export default function ClientQuestionnaire() {
                           type="text"
                           value={formData.spouseName}
                           onChange={(e) => updateField('spouseName', e.target.value)}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                            errors.spouseName ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.spouseName ? 'border-red-500' : 'border-gray-300'
+                            }`}
                           placeholder="Spouse name"
                         />
                         {errors.spouseName && <p className="text-red-500 text-sm mt-1">{errors.spouseName}</p>}
@@ -566,9 +631,8 @@ export default function ClientQuestionnaire() {
                           type="date"
                           value={formData.spouseDob}
                           onChange={(e) => updateField('spouseDob', e.target.value)}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                            errors.spouseDob ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.spouseDob ? 'border-red-500' : 'border-gray-300'
+                            }`}
                         />
                         {errors.spouseDob && <p className="text-red-500 text-sm mt-1">{errors.spouseDob}</p>}
                       </div>
@@ -648,9 +712,8 @@ export default function ClientQuestionnaire() {
                             type="text"
                             value={formData.spouseAddress1}
                             onChange={(e) => updateField('spouseAddress1', e.target.value)}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                              errors.spouseAddress1 ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.spouseAddress1 ? 'border-red-500' : 'border-gray-300'
+                              }`}
                             placeholder="House/Flat No., Building Name"
                           />
                           {errors.spouseAddress1 && <p className="text-red-500 text-sm mt-1">{errors.spouseAddress1}</p>}
@@ -685,9 +748,8 @@ export default function ClientQuestionnaire() {
                               type="text"
                               value={formData.spouseCity}
                               onChange={(e) => updateField('spouseCity', e.target.value)}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                                errors.spouseCity ? 'border-red-500' : 'border-gray-300'
-                              }`}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.spouseCity ? 'border-red-500' : 'border-gray-300'
+                                }`}
                               placeholder="Mumbai"
                             />
                             {errors.spouseCity && <p className="text-red-500 text-sm mt-1">{errors.spouseCity}</p>}
@@ -710,9 +772,8 @@ export default function ClientQuestionnaire() {
                               type="text"
                               value={formData.spousePinCode}
                               onChange={(e) => updateField('spousePinCode', e.target.value)}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                                errors.spousePinCode ? 'border-red-500' : 'border-gray-300'
-                              }`}
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.spousePinCode ? 'border-red-500' : 'border-gray-300'
+                                }`}
                               placeholder="400001"
                               maxLength="6"
                             />
@@ -732,9 +793,8 @@ export default function ClientQuestionnaire() {
                         type="text"
                         value={formData.placeOfBirth}
                         onChange={(e) => updateField('placeOfBirth', e.target.value)}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                          errors.placeOfBirth ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.placeOfBirth ? 'border-red-500' : 'border-gray-300'
+                          }`}
                         placeholder="City of birth"
                       />
                       {errors.placeOfBirth && <p className="text-red-500 text-sm mt-1">{errors.placeOfBirth}</p>}
@@ -777,9 +837,8 @@ export default function ClientQuestionnaire() {
                             max="10"
                             value={formData.numberOfChildren}
                             onChange={(e) => updateField('numberOfChildren', e.target.value)}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                              errors.numberOfChildren ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.numberOfChildren ? 'border-red-500' : 'border-gray-300'
+                              }`}
                             placeholder="Number of children"
                           />
                           {errors.numberOfChildren && <p className="text-red-500 text-sm mt-1">{errors.numberOfChildren}</p>}
@@ -795,9 +854,8 @@ export default function ClientQuestionnaire() {
                                   type="text"
                                   value={child.name || ''}
                                   onChange={(e) => updateChildField(index, 'name', e.target.value)}
-                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                                    errors[`child${index}Name`] ? 'border-red-500' : 'border-gray-300'
-                                  }`}
+                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors[`child${index}Name`] ? 'border-red-500' : 'border-gray-300'
+                                    }`}
                                   placeholder="Child's name"
                                 />
                                 {errors[`child${index}Name`] && <p className="text-red-500 text-sm mt-1">{errors[`child${index}Name`]}</p>}
@@ -809,9 +867,8 @@ export default function ClientQuestionnaire() {
                                   type="date"
                                   value={child.dob || ''}
                                   onChange={(e) => updateChildField(index, 'dob', e.target.value)}
-                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                                    errors[`child${index}Dob`] ? 'border-red-500' : 'border-gray-300'
-                                  }`}
+                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors[`child${index}Dob`] ? 'border-red-500' : 'border-gray-300'
+                                    }`}
                                 />
                                 {errors[`child${index}Dob`] && <p className="text-red-500 text-sm mt-1">{errors[`child${index}Dob`]}</p>}
                               </div>
@@ -828,15 +885,14 @@ export default function ClientQuestionnaire() {
             {step === 3 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold text-black mb-4">Investment Goals & Preferences</h2>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-black mb-1">Employment Status *</label>
                   <select
                     value={formData.employmentStatus}
                     onChange={(e) => updateField('employmentStatus', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                      errors.employmentStatus ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.employmentStatus ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   >
                     <option value="">Select status</option>
                     <option value="employed">Employed Full-time</option>
@@ -853,9 +909,8 @@ export default function ClientQuestionnaire() {
                   <select
                     value={formData.monthlyExpenses}
                     onChange={(e) => updateField('monthlyExpenses', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                      errors.monthlyExpenses ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.monthlyExpenses ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   >
                     <option value="">Select range</option>
                     <option value="0-25k">₹0 - ₹25,000</option>
@@ -914,7 +969,7 @@ export default function ClientQuestionnaire() {
                     <label className="block text-sm font-medium text-black mb-2">Investment Types (select all that apply)</label>
                     <div className="space-y-2">
                       {['Stocks', 'Mutual Funds', 'Fixed Deposits', 'Real Estate', 'Gold', 'PPF/EPF', 'Cryptocurrency', 'Other'].map(type => (
-                        <label key={type} className="flex items-center">
+                        <label key={type} className="flex items-center text-black">
                           <input
                             type="checkbox"
                             checked={formData.investmentTypes.includes(type)}
@@ -960,9 +1015,8 @@ export default function ClientQuestionnaire() {
                   <select
                     value={formData.riskTolerance}
                     onChange={(e) => updateField('riskTolerance', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                      errors.riskTolerance ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.riskTolerance ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   >
                     <option value="">Select risk tolerance</option>
                     <option value="conservative">Conservative - Prefer stability and minimal risk</option>
@@ -977,9 +1031,8 @@ export default function ClientQuestionnaire() {
                   <select
                     value={formData.timeHorizon}
                     onChange={(e) => updateField('timeHorizon', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
-                      errors.timeHorizon ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${errors.timeHorizon ? 'border-red-500' : 'border-gray-300'
+                      }`}
                   >
                     <option value="">Select time horizon</option>
                     <option value="short">Short-term (1-3 years)</option>
@@ -1013,7 +1066,7 @@ export default function ClientQuestionnaire() {
                   Previous
                 </button>
               )}
-              
+
               {step < 3 ? (
                 <button
                   type="button"

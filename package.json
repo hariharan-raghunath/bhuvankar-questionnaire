@@ -10,11 +10,13 @@
   },
   "dependencies": {
     "@prisma/client": "^6.18.0",
+    "country-state-city": "^3.2.1",
     "dotenv": "^17.2.3",
     "lucide-react": "^0.545.0",
     "next": "15.5.4",
     "react": "^19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-phone-number-input": "^3.4.13"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
