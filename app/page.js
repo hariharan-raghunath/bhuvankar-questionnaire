@@ -1,3 +1,4 @@
+"use client"
 import { useState } from 'react';
 import { CheckCircle, ArrowRight, ArrowLeft, Lock } from 'lucide-react';
 
@@ -269,7 +270,9 @@ export default function ClientQuestionnaire() {
                       type="text"
                       value={formData.fullName}
                       onChange={(e) => updateField('fullName', e.target.value)}
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black errors.fullName ? border-red-500 border-gray-300"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
+                        errors.fullName ? 'border-red-500' : 'border-gray-300'
+                      }`}
                       placeholder="John Doe"
                     />
                     {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
@@ -327,7 +330,7 @@ export default function ClientQuestionnaire() {
                       type="tel"
                       value={formData.mobile}
                       onChange={(e) => updateField('mobile', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black  ${
                         errors.mobile ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="+91 98765 43210"
@@ -342,7 +345,7 @@ export default function ClientQuestionnaire() {
                       type="email"
                       value={formData.email}
                       onChange={(e) => updateField('email', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                         errors.email ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="john@example.com"
@@ -358,7 +361,7 @@ export default function ClientQuestionnaire() {
                     type="text"
                     value={formData.address1}
                     onChange={(e) => updateField('address1', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                       errors.address1 ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="House/Flat No., Building Name"
@@ -372,7 +375,7 @@ export default function ClientQuestionnaire() {
                     type="text"
                     value={formData.address2}
                     onChange={(e) => updateField('address2', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                     placeholder="Street, Area, Locality"
                   />
                 </div>
@@ -383,7 +386,7 @@ export default function ClientQuestionnaire() {
                     type="text"
                     value={formData.address3}
                     onChange={(e) => updateField('address3', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                     placeholder="Landmark"
                   />
                 </div>
@@ -395,7 +398,7 @@ export default function ClientQuestionnaire() {
                       type="text"
                       value={formData.city}
                       onChange={(e) => updateField('city', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                         errors.city ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="Mumbai"
@@ -409,7 +412,7 @@ export default function ClientQuestionnaire() {
                       type="text"
                       value={formData.country}
                       onChange={(e) => updateField('country', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                         errors.country ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="India"
@@ -423,7 +426,7 @@ export default function ClientQuestionnaire() {
                       type="text"
                       value={formData.pinCode}
                       onChange={(e) => updateField('pinCode', e.target.value)}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                         errors.pinCode ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="400001"
@@ -439,7 +442,7 @@ export default function ClientQuestionnaire() {
                     type="text"
                     value={formData.aadharNumber}
                     onChange={(e) => updateField('aadharNumber', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                       errors.aadharNumber ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="1234 5678 9012"
@@ -459,7 +462,7 @@ export default function ClientQuestionnaire() {
                   <select
                     value={formData.annualIncome}
                     onChange={(e) => updateField('annualIncome', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                       errors.annualIncome ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
@@ -477,7 +480,7 @@ export default function ClientQuestionnaire() {
                   <label className="block text-sm font-medium text-black mb-1">Are you a politically exposed person? *</label>
                   <p className="text-xs text-black mb-2">PEP is an individual who has held or currently holds a prominent public function, either in India or a foreign country</p>
                   <div className="space-y-2">
-                    <label className="flex items-center">
+                    <label className="flex items-center text-black">
                       <input
                         type="radio"
                         value="yes"
@@ -487,7 +490,7 @@ export default function ClientQuestionnaire() {
                       />
                       Yes
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center text-black">
                       <input
                         type="radio"
                         value="no"
@@ -504,7 +507,7 @@ export default function ClientQuestionnaire() {
                 <div>
                   <label className="block text-sm font-medium text-black mb-1">Marital Status *</label>
                   <div className="space-y-2">
-                    <label className="flex items-center">
+                    <label className="flex items-center text-black">
                       <input
                         type="radio"
                         value="married"
@@ -514,7 +517,7 @@ export default function ClientQuestionnaire() {
                       />
                       Married
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center text-black">
                       <input
                         type="radio"
                         value="unmarried"
@@ -524,7 +527,7 @@ export default function ClientQuestionnaire() {
                       />
                       Unmarried
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center text-black">
                       <input
                         type="radio"
                         value="others"
@@ -549,7 +552,7 @@ export default function ClientQuestionnaire() {
                           type="text"
                           value={formData.spouseName}
                           onChange={(e) => updateField('spouseName', e.target.value)}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                             errors.spouseName ? 'border-red-500' : 'border-gray-300'
                           }`}
                           placeholder="Spouse name"
@@ -563,7 +566,7 @@ export default function ClientQuestionnaire() {
                           type="date"
                           value={formData.spouseDob}
                           onChange={(e) => updateField('spouseDob', e.target.value)}
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                             errors.spouseDob ? 'border-red-500' : 'border-gray-300'
                           }`}
                         />
@@ -578,7 +581,7 @@ export default function ClientQuestionnaire() {
                           type="text"
                           value={formData.spousePan}
                           onChange={(e) => updateField('spousePan', e.target.value.toUpperCase())}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                           placeholder="ABCDE1234F"
                           maxLength="10"
                         />
@@ -591,7 +594,7 @@ export default function ClientQuestionnaire() {
                           type="tel"
                           value={formData.spouseMobile}
                           onChange={(e) => updateField('spouseMobile', e.target.value)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                           placeholder="+91 98765 43210"
                         />
                         <p className="text-xs text-black mt-1">Mandatory if spouse is nominee</p>
@@ -604,7 +607,7 @@ export default function ClientQuestionnaire() {
                         type="email"
                         value={formData.spouseEmail}
                         onChange={(e) => updateField('spouseEmail', e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                         placeholder="spouse@example.com"
                       />
                       <p className="text-xs text-black mt-1">Mandatory if spouse is nominee</p>
@@ -613,7 +616,7 @@ export default function ClientQuestionnaire() {
                     <div>
                       <label className="block text-sm font-medium text-black mb-1">Address *</label>
                       <div className="space-y-2">
-                        <label className="flex items-center">
+                        <label className="flex items-center text-black">
                           <input
                             type="radio"
                             value="same"
@@ -623,7 +626,7 @@ export default function ClientQuestionnaire() {
                           />
                           Same as Mine
                         </label>
-                        <label className="flex items-center">
+                        <label className="flex items-center text-black">
                           <input
                             type="radio"
                             value="different"
@@ -645,7 +648,7 @@ export default function ClientQuestionnaire() {
                             type="text"
                             value={formData.spouseAddress1}
                             onChange={(e) => updateField('spouseAddress1', e.target.value)}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                               errors.spouseAddress1 ? 'border-red-500' : 'border-gray-300'
                             }`}
                             placeholder="House/Flat No., Building Name"
@@ -659,7 +662,7 @@ export default function ClientQuestionnaire() {
                             type="text"
                             value={formData.spouseAddress2}
                             onChange={(e) => updateField('spouseAddress2', e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                             placeholder="Street, Area, Locality"
                           />
                         </div>
@@ -670,7 +673,7 @@ export default function ClientQuestionnaire() {
                             type="text"
                             value={formData.spouseAddress3}
                             onChange={(e) => updateField('spouseAddress3', e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                             placeholder="Landmark"
                           />
                         </div>
@@ -682,7 +685,7 @@ export default function ClientQuestionnaire() {
                               type="text"
                               value={formData.spouseCity}
                               onChange={(e) => updateField('spouseCity', e.target.value)}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                                 errors.spouseCity ? 'border-red-500' : 'border-gray-300'
                               }`}
                               placeholder="Mumbai"
@@ -696,7 +699,7 @@ export default function ClientQuestionnaire() {
                               type="text"
                               value={formData.spouseCountry}
                               onChange={(e) => updateField('spouseCountry', e.target.value)}
-                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                               placeholder="India"
                             />
                           </div>
@@ -707,7 +710,7 @@ export default function ClientQuestionnaire() {
                               type="text"
                               value={formData.spousePinCode}
                               onChange={(e) => updateField('spousePinCode', e.target.value)}
-                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                                 errors.spousePinCode ? 'border-red-500' : 'border-gray-300'
                               }`}
                               placeholder="400001"
@@ -729,7 +732,7 @@ export default function ClientQuestionnaire() {
                         type="text"
                         value={formData.placeOfBirth}
                         onChange={(e) => updateField('placeOfBirth', e.target.value)}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                           errors.placeOfBirth ? 'border-red-500' : 'border-gray-300'
                         }`}
                         placeholder="City of birth"
@@ -740,7 +743,7 @@ export default function ClientQuestionnaire() {
                     <div>
                       <label className="block text-sm font-medium text-black mb-1">Do you have children? *</label>
                       <div className="space-y-2">
-                        <label className="flex items-center">
+                        <label className="flex items-center text-black">
                           <input
                             type="radio"
                             value="yes"
@@ -750,7 +753,7 @@ export default function ClientQuestionnaire() {
                           />
                           Yes
                         </label>
-                        <label className="flex items-center">
+                        <label className="flex items-center text-black">
                           <input
                             type="radio"
                             value="no"
@@ -774,7 +777,7 @@ export default function ClientQuestionnaire() {
                             max="10"
                             value={formData.numberOfChildren}
                             onChange={(e) => updateField('numberOfChildren', e.target.value)}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                               errors.numberOfChildren ? 'border-red-500' : 'border-gray-300'
                             }`}
                             placeholder="Number of children"
@@ -792,7 +795,7 @@ export default function ClientQuestionnaire() {
                                   type="text"
                                   value={child.name || ''}
                                   onChange={(e) => updateChildField(index, 'name', e.target.value)}
-                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                                     errors[`child${index}Name`] ? 'border-red-500' : 'border-gray-300'
                                   }`}
                                   placeholder="Child's name"
@@ -806,7 +809,7 @@ export default function ClientQuestionnaire() {
                                   type="date"
                                   value={child.dob || ''}
                                   onChange={(e) => updateChildField(index, 'dob', e.target.value)}
-                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                                     errors[`child${index}Dob`] ? 'border-red-500' : 'border-gray-300'
                                   }`}
                                 />
@@ -831,7 +834,7 @@ export default function ClientQuestionnaire() {
                   <select
                     value={formData.employmentStatus}
                     onChange={(e) => updateField('employmentStatus', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                       errors.employmentStatus ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
@@ -850,7 +853,7 @@ export default function ClientQuestionnaire() {
                   <select
                     value={formData.monthlyExpenses}
                     onChange={(e) => updateField('monthlyExpenses', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                       errors.monthlyExpenses ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
@@ -869,7 +872,7 @@ export default function ClientQuestionnaire() {
                   <select
                     value={formData.currentSavings}
                     onChange={(e) => updateField('currentSavings', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                   >
                     <option value="">Select range</option>
                     <option value="0-1L">₹0 - ₹1 Lakh</option>
@@ -883,7 +886,7 @@ export default function ClientQuestionnaire() {
                 <div>
                   <label className="block text-sm font-medium text-black mb-1">Do you have existing investments?</label>
                   <div className="space-y-2">
-                    <label className="flex items-center">
+                    <label className="flex items-center text-black">
                       <input
                         type="radio"
                         value="yes"
@@ -893,7 +896,7 @@ export default function ClientQuestionnaire() {
                       />
                       Yes
                     </label>
-                    <label className="flex items-center">
+                    <label className="flex items-center text-black">
                       <input
                         type="radio"
                         value="no"
@@ -938,7 +941,7 @@ export default function ClientQuestionnaire() {
                       'Estate Planning',
                       'Home Purchase'
                     ].map(goal => (
-                      <label key={goal} className="flex items-center">
+                      <label key={goal} className="flex items-center text-black">
                         <input
                           type="checkbox"
                           checked={formData.financialGoals.includes(goal)}
@@ -957,7 +960,7 @@ export default function ClientQuestionnaire() {
                   <select
                     value={formData.riskTolerance}
                     onChange={(e) => updateField('riskTolerance', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                       errors.riskTolerance ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
@@ -974,7 +977,7 @@ export default function ClientQuestionnaire() {
                   <select
                     value={formData.timeHorizon}
                     onChange={(e) => updateField('timeHorizon', e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black ${
                       errors.timeHorizon ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
@@ -991,7 +994,7 @@ export default function ClientQuestionnaire() {
                   <textarea
                     value={formData.additionalNotes}
                     onChange={(e) => updateField('additionalNotes', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                     rows="4"
                     placeholder="Any additional information you'd like to share..."
                   />
