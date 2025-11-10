@@ -8,30 +8,35 @@ datasource db {
 }
 
 model ClientSubmission {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
+  // Primary identifiers
+  id                Int      @id @default(autoincrement())  // Auto-incrementing number
+  panNumber         String   @unique  // Unique PAN (encrypted) - natural key
+  panNumberIv       String
+  panNumberAuthTag  String
+  
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt  // Auto-updates on changes
+  submittedAt       DateTime @default(now())
   
   // Personal Details (encrypted where needed)
-  fullName        String
-  dateOfBirth     DateTime
-  panNumber       String   // encrypted
-  panNumberIv     String
-  panNumberAuthTag String
-  nameAsPerPan    String
-  mobile          String   // encrypted
-  mobileIv        String
-  mobileAuthTag   String
-  email           String   // encrypted
-  emailIv         String
-  emailAuthTag    String
-  address1        String
-  address2        String?
-  address3        String?
-  city            String
-  country         String
-  pinCode         String
-  aadharNumber    String   // encrypted
-  aadharNumberIv  String
+  fullName          String
+  dateOfBirth       DateTime
+  nameAsPerPan      String
+  mobile            String   // encrypted
+  mobileIv          String
+  mobileAuthTag     String
+  email             String   // encrypted
+  emailIv           String
+  emailAuthTag      String
+  address1          String
+  address2          String?
+  address3          String?
+  city              String
+  country           String
+  pinCode           String
+  aadharNumber      String   // encrypted
+  aadharNumberIv    String
   aadharNumberAuthTag String
   
   // Financial Details
@@ -59,7 +64,7 @@ model ClientSubmission {
   // Children
   hasChildren      Boolean
   numberOfChildren Int?
-  childrenData     Json?    // Store array of {name, dob}
+  childrenData     Json?
   
   // Investment Info
   employmentStatus  String
@@ -73,10 +78,12 @@ model ClientSubmission {
   additionalNotes   String?
   
   // Metadata
-  submittedAt DateTime @default(now())
-  ipAddress   String
-  userAgent   String
+  ipAddress        String
+  userAgent        String
+  version          Int      @default(1)  // Track number of updates
   
-  @@index([createdAt])
+  @@index([panNumber])
   @@index([email])
+  @@index([createdAt])
+  @@index([id])
 }
